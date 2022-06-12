@@ -1,11 +1,20 @@
 #pragma once
-#include "CustomImGui.h"
 #include "ImGuiInfo.h"
 #include <Windows.h> //Try to remove and forward declare HWND
+#include "CustomImGui.h"
 
 struct ID3D11Device;
 struct ID3D11DeviceContext;
 class  ModelFactory; 
+
+struct ImGuiIO;
+
+enum class ImguiFont
+{
+	Regular,
+	Bold,
+	Italic
+};
 
 class ImGuiInterface
 {
@@ -18,9 +27,12 @@ public:
 	void Render();
 	void ShutDown();
 
-	CustomImGui& GetCustomImGui() { return myCustomImGui; }
+	inline CustomImGui* GetCustomImGui() { return myCustomImGui; }
 	void SendCustomInfo(CustomImGuiInfo someInfo);
-	void SetGraphicsEngine(GraphicsEngine* aGFX) { myCustomImGui.myGraphicsEngineptr = aGFX; }
+	void SetGraphicsEngine(GraphicsEngine* aGFX) { myCustomImGui->myGraphicsEngineptr = aGFX; }
 private:
-	CustomImGui myCustomImGui;
+	void SetDarkThemeColors();
+	void SetupFonts(ImGuiIO& io);
+
+	CustomImGui* myCustomImGui;
 };

@@ -47,6 +47,7 @@ private:
 	Model* 	    myModel;
 	Camera      myCamera;
 	Light 	    myLight;
+	Texture     myCubeMap;
 
 	CU::Input*  myInputptr;
 

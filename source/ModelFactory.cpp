@@ -137,8 +137,8 @@ Model* ModelFactory::LoadModel(const std::wstring& someFilePath)
 	//if (!InitToAppropriateShader())
 		//return;
 
-	filepath = "bin/data/textures/cool_alien_bricks.dds";
-	if(!AssignTextures(model, filepath))
+	filepath = "bin/data/textures/dds/cool_alien_bricks.dds";
+	if (!AssignTextures(model, &filepath, 1, false, true));
 
 	myModels.insert(std::make_pair(filepath, model));
 	return model;
@@ -165,7 +165,7 @@ bool ModelFactory::InitializeBuffers(FBXModel* anInModel, Model* aOutModel)
 		auto& UVs = vert.UVs;
 
 		vertices[i].position = { pos[0], pos[1], pos[2]};
-		vertices[i].UVs = { UVs[0], UVs[1]};
+		vertices[i].uv = { UVs[0], UVs[1]};
 		vertices[i].normal = { nor[0], nor[1], nor[2]};
 
 		indices[i] = i;
@@ -261,7 +261,7 @@ Model* ModelFactory::LoadModelObj(const char* someFileName)
 	{
 		fin >> vertices[i].position.x >> vertices[i].position.y >> vertices[i].position.z;
 		fin >> vertices[i].normal.x   >> vertices[i].normal.y   >> vertices[i].normal.z;
-		fin >> vertices[i].UVs.x      >> vertices[i].UVs.y;
+		fin >> vertices[i].uv.x      >> vertices[i].uv.y;
 
 		indices[i] = i;
 	}
@@ -296,7 +296,8 @@ Model* ModelFactory::LoadModelObj(const char* someFileName)
 	delete[] indices;
 	indices = nullptr;
 
-	AssignTextures(model, "bin/data/textures/cool_alien_bricks.dds");
+	const std::string texture = "bin/data/textures/dds/cool_alien_bricks.dds";
+	AssignTextures(model, &texture, 1, false, true);
 
 	myModels.insert(std::make_pair(filepath, model));
 	return model;
@@ -333,14 +334,23 @@ bool ModelFactory::InitializeBuffers(Model* aOutModel, Vertex* vertices, const u
 	return true;
 }
 
-bool ModelFactory::AssignTextures(Model* aModel, const std::string& aFilepath)
+bool ModelFactory::AssignTextures(Model* aModel, const std::string* texturePaths, size_t textureAmount, bool useSRGB, bool generateMipMaps)
 {
-	//std::wstring filepath = std::wstring(aFilepath.begin(), aFilepath.end());
+	bool result = true;
+	for (size_t i = 0; i < textureAmount; i++)
+	{
+		std::wstring filepath = std::wstring(texturePaths[i].begin(), texturePaths[i].end());
+		auto& texture = aModel->myTextures.emplace_back();
+		if (!texture.Init(myDevice, myDeviceContext, filepath.c_str(), useSRGB, useSRGB, generateMipMaps))
+		{
+			result = false;
+			continue;
+		}
 
-	if (!aModel->myTexture.Initialize(myDevice, aFilepath.c_str()))
-		return false;
+		texture.SetSlotIndex((TextureType)i);
+	}
 
-	return true;
+	return result;
 }
 
 Model* ModelFactory::GenerateTerrain()
@@ -368,14 +378,29 @@ Model* ModelFactory::GenerateTerrain()
 	unsigned int* indices = new unsigned int[indexCount];
 	GenerateIndices(indices, indexCount, resolution);
 
+	//Create Model
 	Model* aModel = new Model();
 	if (!InitializeBuffers(aModel, vertices, heightMap.size(), indices, indexCount))
 		return nullptr;
 
-	const std::string texturePath = "bin/data/textures/cool_alien_bricks.dds";
-	const std::string randomModelName = "terrain01";
-	if (!AssignTextures(aModel, texturePath));
+	const std::string texturePaths[]
+	{
+		 "bin/data/textures/other/terrain/Grass_c.png",
+		 "bin/data/textures/other/terrain/Rock_c.png",
+		 "bin/data/textures/other/terrain/Snow_c.png",
+		 		   
+		 "bin/data/textures/other/terrain/Grass_n.png",
+		 "bin/data/textures/other/terrain/Rock_n.png",
+		 "bin/data/textures/other/terrain/Snow_n.png",
+				   
+		 "bin/data/textures/other/terrain/Grass_m.png",
+		 "bin/data/textures/other/terrain/Rock_m.png",
+		 "bin/data/textures/other/terrain/Snow_m.png",
+	};
 
+	AssignTextures(aModel, texturePaths, std::size(texturePaths), true, true);
+
+	const std::string randomModelName = "terrain01";
 	myModels.insert(std::make_pair(randomModelName, aModel));
 
 	delete[] vertices;
@@ -388,7 +413,7 @@ Model* ModelFactory::GenerateTerrain()
 
 void ModelFactory::GenerateVertices(Vertex* outVertices, const std::vector<float>& aHeightMap, const float aResolution)
 {
-	float distanceScalar = 0.04f;
+	float distanceScalar = 0.08f;
 	float uvScalar = 20.0f;
 
 	for (size_t i = 0; i < aHeightMap.size(); i++)
@@ -397,13 +422,13 @@ void ModelFactory::GenerateVertices(Vertex* outVertices, const std::vector<float
 		size_t column = i % (int)aResolution;
 
 		//Position
-		outVertices[i].position.x = (float)row * distanceScalar;
+		outVertices[i].position.x = (float)row    * distanceScalar;
 		outVertices[i].position.y = aHeightMap[i];
 		outVertices[i].position.z = (float)column * distanceScalar;
 
 		//UV
-		outVertices[i].UVs.x = row * (1 / aResolution) * uvScalar;
-		outVertices[i].UVs.y = column * (1 / aResolution) * uvScalar;
+		outVertices[i].uv.x = row    * (1 / aResolution) * uvScalar;
+		outVertices[i].uv.y = column * (1 / aResolution) * uvScalar;
 	}
 }
 
@@ -411,27 +436,29 @@ void ModelFactory::GenerateNormals(Vertex* outVertices, const size_t amountVerti
 {
 	for (size_t i = 0; i < amountVertices; i++)
 	{
-		size_t row = i / (int)aResolution;
-		size_t column = i % (int)aResolution;
+		const size_t row = i / (int)aResolution;
+		const size_t column = i % (int)aResolution;
 
 		if (row == aResolution - 1 || column == aResolution - 1)
 			continue;
 		if (row == 0 || column == 0)
 			continue;
 
-		CU::Vector3f above = outVertices[i - (int)aResolution].position;
-		CU::Vector3f below = outVertices[i + (int)aResolution].position;
-		CU::Vector3f right = outVertices[i + 1].position;
-		CU::Vector3f left = outVertices[i - 1].position;
+		const CU::Vector3f above = outVertices[i - (int)aResolution].position;
+		const CU::Vector3f below = outVertices[i + (int)aResolution].position;
+		const CU::Vector3f right = outVertices[i + 1].position;
+		const CU::Vector3f left = outVertices[i - 1].position;
 
-		CU::Vector3f vertical = below - above;
-		CU::Vector3f horizontal = right - left;
+		const CU::Vector3f vertical = below - above;
+		const CU::Vector3f horizontal = right - left;
 
-		CU::Vector3f Ncross = (horizontal.Cross(vertical)).GetNormalized();
+		const CU::Vector3f Ncross = (horizontal.Cross(vertical)).GetNormalized();
+		memcpy(&outVertices[i].normal, &Ncross, sizeof(CU::Vector3f));
 
-		outVertices[i].normal.x = Ncross.x;
-		outVertices[i].normal.y = Ncross.y;
-		outVertices[i].normal.z = Ncross.z;
+		const CU::Vector3f crossTanget   = outVertices[i].normal.Cross(CU::Vector3f(0.0f, 0.0f, 1.0f)).GetNormalized();
+		const CU::Vector3f crossBitanget = outVertices[i].normal.Cross(CU::Vector3f(1.0f, 0.0f, 0.0f)).GetNormalized();
+		memcpy(&outVertices[i].tangent, &crossTanget, sizeof(CU::Vector3f));
+		memcpy(&outVertices[i].bitangent, &crossBitanget, sizeof(CU::Vector3f));
 	}
 }
 

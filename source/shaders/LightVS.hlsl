@@ -1,22 +1,32 @@
+#include "ShaderStructs.hlsli"
 #include "ShaderCommon.hlsli"
 
-PixelInputLight LightVertexShader(VertexInputLight input)
+PixelInputType main(VertexInputType input)
 {
-    PixelInputLight output;
-    float4 worldPosition;
+    PixelInputType output;
     
-    float4 vertexObjectPos = float4(input.position, 1.0f);
-    float4 vertexWorldPos  = mul(modelMatrix, vertexObjectPos);
-    float4 vertexClipPos   = mul(worldToClipMatrix, vertexWorldPos);
-    output.position = vertexClipPos;
+    //MVP
+    float4 pos = float4(input.position, 1.0f);
+    float4 worldPos = mul(modelMatrix, pos);
+    float4 vertexToClipPos = mul(modelToClipMatrix, worldPos);
+    output.position = vertexToClipPos;
     
+    output.worldPosition = worldPos;
+    
+    //Normal
     float4 vertexObjectNormal = float4(input.normal, 0.0f);
     float4 vertexWorldNormal = mul(modelMatrix, vertexObjectNormal);
-    output.normal = vertexWorldNormal;
+    output.normal = normalize(vertexWorldNormal);
     
-    worldPosition = mul(vertexObjectPos, modelMatrix);
-    output.viewDirection = cameraPosition.xyz - worldPosition.xyz;
-    output.viewDirection = normalize(output.viewDirection);
+    //Tangent
+    float4 vertexObjectTangent = float4(input.tangent, 0.0f);
+    float4 vertexWorldTangent = mul(modelMatrix, vertexObjectTangent);
+    output.tangent = normalize(vertexWorldTangent);
+    
+    //Bitangent
+    float4 vertexObjectBitangent = float4(input.bitangent, 0.0f);
+    float4 vertexWorldBitangent = mul(modelMatrix, vertexObjectBitangent);
+    output.bitangent = normalize(vertexWorldBitangent);
     
     output.uv = input.uv;
     

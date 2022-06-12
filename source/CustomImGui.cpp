@@ -5,8 +5,10 @@
 #include <stdio.h>
 #include <filesystem>
 #include "GraphicsEngine.h"
+#include "ImGuiInterface.h"
 
-CustomImGui::CustomImGui()
+CustomImGui::CustomImGui(ImGuiInterface* aImguiInterface)
+	: myImguiIptr(aImguiInterface)
 {
 	myDebugFeatures = DebugFeature::Profiler;
 }
@@ -202,6 +204,10 @@ void CustomImGui::Filter()
 
 void CustomImGui::GPUInfo()
 {
+	ImGuiIO& io = ImGui::GetIO();
+	auto boldFont = io.Fonts->Fonts[(int)ImguiFont::Bold];
+
+	ImGui::PushFont(boldFont);
 	ImGui::Begin("GPUInfo");
 	char adapterOut[128];
 	sprintf_s(adapterOut, "Adapter: ");
@@ -217,6 +223,7 @@ void CustomImGui::GPUInfo()
 	strcat_s(dvrOut, dvm);
 
 	ImGui::Text(dvrOut);
+	ImGui::PopFont();
 	ImGui::End();
 }
 

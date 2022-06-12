@@ -5,7 +5,7 @@
 #include "CU/Vector3.hpp"
 #include "CU/Vector2.hpp"
 
-enum TextureType
+enum FBXTextureType
 {
 	cptnc_DIFFUSE,
 	cptnc_NORMALS,

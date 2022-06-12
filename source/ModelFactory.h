@@ -29,7 +29,7 @@ private:
 	bool InitializeBuffers(FBXModel* anInModel, Model* aOutModel);
 	bool InitializeBuffers(Model* aOutModel, Vertex* vertices, const unsigned vertexCount, unsigned int* indices, const unsigned int indexCount);
 
-	bool AssignTextures(Model* aModel, const std::string& aFilePath);
+	bool AssignTextures(Model* aModel, const std::string* texturePaths, size_t textureAmount, bool useSRGB, bool generateMipMaps);
 
 	ID3D11Device* myDevice;
 	ID3D11DeviceContext* myDeviceContext;

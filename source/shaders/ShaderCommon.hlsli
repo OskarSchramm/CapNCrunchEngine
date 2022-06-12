@@ -1,39 +1,36 @@
-cbuffer ObjectBuffer : register(b0)
-{
-    float4x4 modelMatrix;
-};
+Texture2D grassTexture : register(t0);
+Texture2D rockTexture : register(t1);
+Texture2D snowTexture : register(t2);
 
-cbuffer FrameBuffer : register(b1)
-{
-    float4x4 worldToClipMatrix;
-};
+Texture2D grassNormal : register(t3);
+Texture2D rockNormal : register(t4);
+Texture2D snowNormal : register(t5);
 
-cbuffer LightBuffer : register(b2)
-{
-    float4 ambientColor;
-    float4 diffuseColor;
-    float3 lightDirection;
-    float specularPower;
-    float4 specularColor;
-};
+Texture2D grassMaterial : register(t6);
+Texture2D rockMaterial : register(t7);
+Texture2D snowMaterial : register(t8);
 
-cbuffer CameraBuffer : register(b3)
+TextureCube cubeMap : register(t9);
+
+SamplerState sampleState : register(s0);
+
+cbuffer FrameBuffer : register(b0)
 {
+    float4x4 modelToClipMatrix;
+    float4 directionalLightColor;
+    float3 directionalLightDir;
+    float totalTime;
     float3 cameraPosition;
     float padding;
 };
 
-struct VertexInputLight
+cbuffer ObjectBuffer : register(b1)
 {
-    float3 position : POSITION;
-    float3 normal : NORMAL;
-    float2 uv : TEXCOORD0;
+    float4x4 modelMatrix;
 };
 
-struct PixelInputLight
+cbuffer LightBuffer : register(b2)
 {
-    float4 position : SV_POSITION;
-    float3 normal : NORMAL;
-    float2 uv : TEXCOORD0;
-    float3 viewDirection : TEXCOORD1;
-};
+    float4 skyColor;
+    float4 groundColor;
+}

@@ -6,14 +6,16 @@
 struct Vertex
 {
 	CU::Vector3f position;
+	CU::Vector2<float> uv;
 	CU::Vector3<float> normal;
-	CU::Vector2<float> UVs;
+	CU::Vector3<float> tangent;
+	CU::Vector3<float> bitangent;
 
 	Vertex() {}
 	Vertex(float X, float Y, float Z, float nX, float nY, float nZ, float tU, float tV)
 	{
 		position = { X, Y, Z};
-		UVs      = { tU, tV };
+		uv      = { tU, tV };
 		normal   = { nX, nY, nZ };
 	}
 };

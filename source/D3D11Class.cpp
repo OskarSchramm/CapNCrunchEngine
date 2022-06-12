@@ -1,6 +1,7 @@
 //AUTHOR Oskar Schramm 2k22
 
 #include "D3D11Class.h"
+#include <string>
 
 D3D11Class::D3D11Class()
 	: mySwapChain(nullptr), myDevice(nullptr), myDeviceContext(nullptr), myRenderTargetView(nullptr),
@@ -122,9 +123,10 @@ bool D3D11Class::ReadAdapter(UINT& aNumerator, UINT& aDenominator, int aScreenWi
 	myVideoCardMemory = (int)(adapterDesc.DedicatedVideoMemory / 1024 / 1024);
 
 	//This is weird in 64 bits but works in 32
-	//error = wcstombs_s(& stringLength, myVideoCardDesc, 128, adapterDesc.Description, 256);
-	//if (error != 0)
-	//	return false;
+	std::wstring wString = std::wstring(adapterDesc.Description);
+	std::string sstring = std::string(wString.begin(), wString.end());
+
+	strcpy_s(myVideoCardDesc, sstring.c_str());
 
 	//Cleanup
 	delete[] displayModeList;

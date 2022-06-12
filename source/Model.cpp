@@ -12,46 +12,10 @@ Model::Model()
 {}
 Model::~Model() {}
 
-void Model::Shutdown()
-{
-	ReleaseTexture();
-
-	ShutdownBuffers();
-}
-
-bool Model::Init(ID3D11Device* aDevice)
-{
-	//IDK
-
-	return true;
-}
-
-void Model::ShutdownBuffers()
-{
-	if (myIndexBuffer)
-	{
-		myIndexBuffer->Release();
-		myIndexBuffer = nullptr;
-	}
-
-	if (myVertexBuffer)
-	{
-		myVertexBuffer->Release();
-		myVertexBuffer = nullptr;
-	}
-}
-
-void Model::ReleaseTexture()
-{
-	if (myTexture.GetTexture())
-		myTexture.Shutdown();
-}
-
 void Model::Render(ID3D11DeviceContext* aDeviceContext)
 {
-	auto texture = myTexture.GetTexture();
-	if (texture)
-		aDeviceContext->PSSetShaderResources(0, 1, &texture);
+	for (auto& t : myTextures)
+		t.BindPS(aDeviceContext);
 
 	unsigned int stride;
 	unsigned int offset;

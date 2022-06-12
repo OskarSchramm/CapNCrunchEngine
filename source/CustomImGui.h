@@ -44,12 +44,13 @@ namespace
 }
 
 class GraphicsEngine;
+class ImGuiInterface;
 
 class CustomImGui
 {
 	friend class ImGuiInterface;
 public:
-	CustomImGui();
+	CustomImGui(ImGuiInterface* aImguiInterface);
 	~CustomImGui();
 	void Init();
 	void Render();
@@ -80,4 +81,5 @@ private:
 	std::vector<std::string>  myModelsButtons;
 
 	GraphicsEngine* myGraphicsEngineptr;
+	ImGuiInterface* myImguiIptr;
 };

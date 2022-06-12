@@ -11,7 +11,7 @@
 
 LightShader::LightShader()
 	: myVertexShader(nullptr), myPixelShader(nullptr), myLayout(nullptr), mySampleState(nullptr),
-	myFrameBuffer(nullptr), myObjectBuffer(nullptr), myCameraBuffer(nullptr), myLightBuffer(nullptr)
+	myFrameBuffer(nullptr), myObjectBuffer(nullptr), myLightBuffer(nullptr)
 {}
 
 LightShader::~LightShader()
@@ -100,14 +100,6 @@ bool LightShader::CreateConstantBuffers(ID3D11Device* aDevice)
 			return false;
 	}
 
-	//Camera buffer
-	{
-		bufferDesc.ByteWidth = sizeof(CameraBuffer);
-		result = aDevice->CreateBuffer(&bufferDesc, NULL, &myCameraBuffer);
-		if (FAILED(result))
-			return false;
-	}
-
 	return true;
 }
 
@@ -165,8 +157,10 @@ bool LightShader::SetPolygonLayout(ID3D11Device* const aDevice, ID3DBlob* aVerte
 	D3D11_INPUT_ELEMENT_DESC polygonLayout[] =
 	{
 		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
 		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"BITANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
 	};
 
 	unsigned int numElements = sizeof(polygonLayout) / sizeof(polygonLayout[0]);
@@ -216,7 +210,7 @@ bool LightShader::SetObjectData(ID3D11DeviceContext* aDeviceContext, Model* aMod
 		memcpy(mappedResource.pData, &objectBufferData, sizeof(ObjectBuffer));
 		aDeviceContext->Unmap(myObjectBuffer, 0);
 
-		aDeviceContext->VSSetConstantBuffers(0, 1, &myObjectBuffer);
+		aDeviceContext->VSSetConstantBuffers(1, 1, &myObjectBuffer);
 	}
 
 	return true;
@@ -230,47 +224,32 @@ bool LightShader::UpdateAndBindBuffers(ID3D11DeviceContext* aDeviceContext, Ligh
 		ZeroMemory(&mappedResource, sizeof(mappedResource));
 
 		//FrameBuffer
-		FrameBuffer frameBufferData = {};
-		auto invCam = CU::Matrix4x4f::GetFastInverse(aCamera->GetViewMatrix()) * aCamera->GetProjectionMatrix();
-		frameBufferData.worldToClipMatrix = invCam;
+		auto invCam = aCamera->GetViewMatrix() * aCamera->GetProjectionMatrix();
+		myFrameBufferData.worldToClipMatrix = invCam;
+		myFrameBufferData.cameraPosition = aCamera->GetTransform().GetPosition();
+		myFrameBufferData.directionalLightDir   = aLight->GetDirectionalLight().myDirection;
+		myFrameBufferData.directionalLightColor = aLight->GetDirectionalLight().myColor;
 
 		aDeviceContext->Map(myFrameBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-		memcpy(mappedResource.pData, &frameBufferData, sizeof(FrameBuffer));
+		memcpy(mappedResource.pData, &myFrameBufferData, sizeof(FrameBuffer));
 		aDeviceContext->Unmap(myFrameBuffer, 0);
 
-		aDeviceContext->VSSetConstantBuffers(1, 1, &myFrameBuffer);
+		aDeviceContext->VSSetConstantBuffers(0, 1, &myFrameBuffer);
+		aDeviceContext->PSSetConstantBuffers(0, 1, &myFrameBuffer);
 	}
 
 	{
 		ZeroMemory(&mappedResource, sizeof(mappedResource));
 
 		//LightBuffer
-		LightBuffer lightBuffer = {};
-		lightBuffer.ambientColor = aLight->GetAmbientColor();
-		lightBuffer.diffuseColor = aLight->GetDiffuseColor();
-		lightBuffer.lightDirection = aLight->GetDirection();
-		lightBuffer.specularColor = aLight->GetSpecularColor();
-		lightBuffer.specularPower = aLight->GetSpecularPower();
+		myLightBufferData.skyColor = aLight->GetAmbientLight().mySkyColor;
+		myLightBufferData.groundColor = aLight->GetAmbientLight().myGroundColor;
 
 		aDeviceContext->Map(myLightBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-		memcpy(mappedResource.pData, &myLightBuffer, sizeof(LightBuffer));
+		memcpy(mappedResource.pData, &myLightBufferData, sizeof(LightBuffer));
 		aDeviceContext->Unmap(myLightBuffer, 0);
 
 		aDeviceContext->PSSetConstantBuffers(2, 1, &myLightBuffer);
-	}
-
-	{
-		ZeroMemory(&mappedResource, sizeof(mappedResource));
-
-		//CameraBuffer
-		CameraBuffer cameraBufferData = {};
-		cameraBufferData.cameraPosition = aCamera->GetViewMatrix().GetPosition();
-
-		aDeviceContext->Map(myCameraBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-		memcpy(mappedResource.pData, &myCameraBuffer, sizeof(CameraBuffer));
-		aDeviceContext->Unmap(myCameraBuffer, 0);
-
-		aDeviceContext->VSSetConstantBuffers(3, 1, &myCameraBuffer);
 	}
 
 	return true;
@@ -304,11 +283,6 @@ bool LightShader::Render(ID3D11DeviceContext* aDeviceContext, Light* aLight, Cam
 
 void LightShader::Shutdown()
 {
-	if (myCameraBuffer)
-	{
-		myCameraBuffer->Release();
-		myCameraBuffer = nullptr;
-	}
 	if (myLightBuffer)
 	{
 		myLightBuffer->Release();

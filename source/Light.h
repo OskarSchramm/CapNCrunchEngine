@@ -1,45 +1,38 @@
-//AUTHOR Oskar Schramm 2k22
-
 #pragma once
 #include "CU/Vector3.hpp"
 #include "CU/Vector4.hpp"
 
 class Light
 {
+	struct DirectionalLight
+	{
+		CU::Vector3f myDirection;
+		CU::Vector4f myColor;
+	};
+
+	struct AmbientLight
+	{
+		CU::Vector4f mySkyColor;
+		CU::Vector4f myGroundColor;
+	};
+
 public:
-	Light();
-	~Light();
+	Light() = default;
+	~Light() = default;
 
-	inline void SetAmbientColor(const float aRed, const float aBlue, const float aGreen, const float aAlpha)
+	inline void SetDirectionalLight(const CU::Vector3f& aDir, const CU::Vector4f& aColor)
 	{
-		myAmbientColor = CU::Vector4f(aRed, aBlue, aGreen, aAlpha);
-	}
-	inline void SetDiffuseColor(const float aRed, const float aBlue, const float aGreen, const float aAlpha) 
+		myDirectionalLight.myDirection = aDir.GetNormalized();
+		myDirectionalLight.myColor = aColor;
+	};
+	inline void SetAmbientLight(const CU::Vector4f& aSkyColor, const CU::Vector4f& aGroundColor)
 	{
-		myDiffuseColor = CU::Vector4f(aRed, aBlue, aGreen, aAlpha);
-	}
-	inline void SetDirection(const float aX, const float aY, const float aZ)
-	{
-		myDirection = CU::Vector3f(aX, aY, aZ);
-	}
-	inline void SetSpecularColor(const float aRed, const float aBlue, const float aGreen, const float aAlpha)
-	{
-		mySpecularColor = CU::Vector4f(aRed, aBlue, aGreen, aAlpha);
-	}
-	inline void SetSpecularPower(const float aPower)
-	{
-		mySpecularPower = aPower;
-	}
-
-	inline CU::Vector4f GetAmbientColor()  const { return myAmbientColor; }
-	inline CU::Vector4f GetDiffuseColor()  const { return myDiffuseColor; }
-	inline CU::Vector3f GetDirection()     const { return myDirection; }
-	inline CU::Vector4f GetSpecularColor() const { return mySpecularColor; }
-	inline float        GetSpecularPower() const { return mySpecularPower; }
+		myAmbientLight.mySkyColor = aSkyColor;
+		myAmbientLight.myGroundColor = aGroundColor;
+	};
+	inline DirectionalLight GetDirectionalLight() const { return myDirectionalLight; }
+	inline AmbientLight GetAmbientLight() const { return myAmbientLight; }
 private:
-	CU::Vector4f myAmbientColor;
-	CU::Vector4f myDiffuseColor;
-	CU::Vector3f myDirection;
-	CU::Vector4f mySpecularColor;
-	float mySpecularPower;
+	DirectionalLight myDirectionalLight;
+	AmbientLight	 myAmbientLight;
 };

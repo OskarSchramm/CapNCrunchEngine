@@ -31,12 +31,27 @@
     <Filter Include="Source Files\External\Imgui">
       <UniqueIdentifier>{b23313e1-f4ed-4045-8079-c466aabf26bd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\RenderShaders">
+      <UniqueIdentifier>{621270b1-0185-4040-bb1c-5f5b46e236cc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\RenderShaders">
+      <UniqueIdentifier>{c3b1cc04-d811-4af4-9c10-3c9a4c18076f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Drawable">
+      <UniqueIdentifier>{f664592e-ff31-4938-b5f4-8f9fc1271e0a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Drawable">
+      <UniqueIdentifier>{a41a4dc1-cabd-47a5-8015-39b6a8670522}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Systems">
+      <UniqueIdentifier>{2e8c33a3-2b62-4473-bd6b-02bba1a23638}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Systems">
+      <UniqueIdentifier>{bb2fad00-7ddb-446f-a840-016acdb61018}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\Camera.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="source\ColorShader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\D3D11Class.cpp">
@@ -45,25 +60,7 @@
     <ClCompile Include="source\GraphicsEngine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\Light.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="source\LightShader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="source\Model.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="source\SystemClass.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="source\Texture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="source\TextureShader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="source\WinMain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="source\ImGuiInterface.cpp">
@@ -90,15 +87,6 @@
     <ClCompile Include="external\imgui\imgui_widgets.cpp">
       <Filter>Source Files\External\Imgui</Filter>
     </ClCompile>
-    <ClCompile Include="source\RenderTexture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="source\ModelFactory.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="source\FBXImporter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="external\directxtex\DDSTextureLoader\DDSTextureLoader11.cpp">
       <Filter>Source Files\External</Filter>
     </ClCompile>
@@ -108,12 +96,30 @@
     <ClCompile Include="source\CU\Input.cpp">
       <Filter>Source Files\External</Filter>
     </ClCompile>
+    <ClCompile Include="source\LightShader.cpp">
+      <Filter>Source Files\RenderShaders</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Model.cpp">
+      <Filter>Source Files\Drawable</Filter>
+    </ClCompile>
+    <ClCompile Include="source\FBXImporter.cpp">
+      <Filter>Source Files\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="source\ModelFactory.cpp">
+      <Filter>Source Files\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="source\RenderTexture.cpp">
+      <Filter>Source Files\Drawable</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Texture.cpp">
+      <Filter>Source Files\Drawable</Filter>
+    </ClCompile>
+    <ClCompile Include="source\WinMain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\Camera.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="source\ColorShader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="source\D3D11Class.h">
@@ -123,21 +129,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="source\Light.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="source\LightShader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="source\Model.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="source\SystemClass.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="source\Texture.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="source\TextureShader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="source\ImGuiInterface.h">
@@ -173,21 +164,6 @@
     <ClInclude Include="external\imgui\imstb_truetype.h">
       <Filter>Header Files\External\Imgui</Filter>
     </ClInclude>
-    <ClInclude Include="source\RenderTexture.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="source\ModelFactory.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="source\Vertex.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="source\FBXdef.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="source\FBXImporter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="external\directxtex\DDSTextureLoader\DDSTextureLoader11.h">
       <Filter>Header Files\External</Filter>
     </ClInclude>
@@ -197,28 +173,58 @@
     <ClInclude Include="source\CU\Input.h">
       <Filter>Header Files\External</Filter>
     </ClInclude>
+    <ClInclude Include="source\LightShader.h">
+      <Filter>Header Files\RenderShaders</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Model.h">
+      <Filter>Header Files\Drawable</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Vertex.h">
+      <Filter>Header Files\Drawable</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Texture.h">
+      <Filter>Header Files\Drawable</Filter>
+    </ClInclude>
+    <ClInclude Include="source\RenderTexture.h">
+      <Filter>Header Files\Drawable</Filter>
+    </ClInclude>
+    <ClInclude Include="source\SystemClass.h">
+      <Filter>Header Files\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="source\ModelFactory.h">
+      <Filter>Header Files\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="source\FBXdef.h">
+      <Filter>Header Files\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="source\FBXImporter.h">
+      <Filter>Header Files\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="source\stb_image.h">
+      <Filter>Header Files\External</Filter>
+    </ClInclude>
+    <ClInclude Include="source\TextureTypes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="source\shaders\ColorPS.hlsl">
-      <Filter>Resources\Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="source\shaders\ColorVS.hlsl">
-      <Filter>Resources\Shaders</Filter>
-    </FxCompile>
     <FxCompile Include="source\shaders\LightPS.hlsl">
       <Filter>Resources\Shaders</Filter>
     </FxCompile>
     <FxCompile Include="source\shaders\LightVS.hlsl">
       <Filter>Resources\Shaders</Filter>
     </FxCompile>
-    <FxCompile Include="source\shaders\TexturePS.hlsl">
-      <Filter>Resources\Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="source\shaders\TextureVS.hlsl">
-      <Filter>Resources\Shaders</Filter>
-    </FxCompile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="source\shaders\ShaderStructs.hlsli">
+      <Filter>Resources\Shaders</Filter>
+    </None>
+    <None Include="source\shaders\CommonFunctions.hlsli">
+      <Filter>Resources\Shaders</Filter>
+    </None>
+    <None Include="source\shaders\PBRFunctions.hlsli">
+      <Filter>Resources\Shaders</Filter>
+    </None>
     <None Include="source\shaders\ShaderCommon.hlsli">
       <Filter>Resources\Shaders</Filter>
     </None>

@@ -36,7 +36,7 @@ bool SystemClass::Initialize()
 		return false;
 
 	//Set imgui gfx and dvr 
-	myGraphics.GetD3DClass()->GetVideoCardInfo(myImgui.GetCustomImGui().GetAdapterName(), *myImgui.GetCustomImGui().GetDVram());
+	myGraphics.GetD3DClass()->GetVideoCardInfo(myImgui.GetCustomImGui()->GetAdapterName(), *myImgui.GetCustomImGui()->GetDVram());
 	myImgui.SetGraphicsEngine(&myGraphics);
 
 	return true;

@@ -28,13 +28,12 @@ bool GraphicsEngine::Initialize(HWND aHWND, int aScreenWidth, int aScreenHeight)
 
 	myModelFactory = new ModelFactory(myD3D.GetDevice(), myD3D.GetDeviceContext());
 
-	myCamera.Init(CU::Vector3f{ 0.0f, 0.0f, -10.0f }, CU::Vector3f::Zero, 90.0f, CU::Vector2i{ aScreenWidth, aScreenHeight }, 0.01f, 1000.0f);
+	myCamera.Init(CU::Vector3f{ 0.0f, 5.0f, -5.0f }, { 45.0f, 45.0f, 0.0f }, 90.0f, CU::Vector2f{ (float)aScreenWidth, (float)aScreenHeight }, 0.01f, 1000.0f);
 
-	myLight.SetAmbientColor(0.15f, 0.15f, 0.15f, 1.0f);
-	myLight.SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
-	myLight.SetDirection(1.0f, 0.0f, 1.0f);
-	myLight.SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
-	myLight.SetSpecularPower(32.0f);
+	myLight.SetDirectionalLight({ 0.5f, -0.5f, 0.0f }, { 0.1f, 0.1f, 0.1, 0.5f });
+	myLight.SetAmbientLight({ 0.9f, 0.35f, 0.25f, 1.0f }, { 0.65f, 0.5f, 0.37f, 1.0f });
+	myCubeMap.Init(myD3D.GetDevice(), myD3D.GetDeviceContext(), L"bin/data/textures/dds/cube_skansen.dds", false, true, true);
+	myCubeMap.SetSlotIndex(TextureType::CubeMap);
 
 	myModel = myModelFactory->GenerateTerrain();
 
@@ -43,14 +42,10 @@ bool GraphicsEngine::Initialize(HWND aHWND, int aScreenWidth, int aScreenHeight)
 
 void GraphicsEngine::Update(float aDT)
 {
-	myCamera.Update(1.0f);
+	myCamera.Update(aDT);
 
-	static float rotation;
-	rotation += (float)CU::Pi * 0.005f;
-	if (rotation > 360.0f)
-		rotation -= 360.0f;
-
-	myModel->GetModelMatrix().CreateRotationAroundX(rotation);
+	float rotSpeed = 3.0f;
+	myLight.SetDirectionalLight({ std::sin(aDT * rotSpeed), std::cos(aDT * rotSpeed), 0.0f }, { 1.0f, 1.0f, 1.0, 1.0f });
 }
 
 bool GraphicsEngine::Render()
@@ -58,11 +53,10 @@ bool GraphicsEngine::Render()
 	if (!myModel)
 		return false;
 
-	bool result;
-
-	result = myLightShader.Render(myD3D.GetDeviceContext(), &myLight, &myCamera, myModel);
-	if (!result)
+	if(!myLightShader.Render(myD3D.GetDeviceContext(), &myLight, &myCamera, myModel))
 		return false;
+
+	myCubeMap.BindPS(myD3D.GetDeviceContext());
 
 	return true;
 }

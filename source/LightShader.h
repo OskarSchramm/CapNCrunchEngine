@@ -28,23 +28,20 @@ class LightShader
 	struct FrameBuffer
 	{
 		CU::Matrix4x4f worldToClipMatrix;
+		CU::Vector4f directionalLightColor;
+		CU::Vector3f directionalLightDir;
+		float totalTime;
+		CU::Vector3f cameraPosition;
+		float padding;
 	};
 	struct ObjectBuffer
 	{
 		CU::Matrix4x4f modelMatrix;
 	};
-	struct CameraBuffer
-	{
-		CU::Vector3f cameraPosition;
-		float padding;
-	};
 	struct LightBuffer
 	{
-		CU::Vector4f ambientColor;
-		CU::Vector4f diffuseColor;
-		CU::Vector3f lightDirection;
-		float specularPower;
-		CU::Vector4f specularColor;
+		CU::Vector4f skyColor;
+		CU::Vector4f groundColor;
 	};
 #pragma endregion
 public:
@@ -80,5 +77,8 @@ private:
 	ID3D11Buffer* myObjectBuffer;
 	ID3D11Buffer* myFrameBuffer;
 	ID3D11Buffer* myLightBuffer;
-	ID3D11Buffer* myCameraBuffer;
+
+	FrameBuffer  myFrameBufferData;
+	ObjectBuffer myObjectBufferData;
+	LightBuffer  myLightBufferData;
 };
